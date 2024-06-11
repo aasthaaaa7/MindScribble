@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
+import { UserItem } from "./user-item";
 
 export const Navigation = () => {
     const pathname = usePathname();
@@ -32,8 +33,8 @@ export const Navigation = () => {
         if (!isResizingRef.current) return;
         let newWidth = event.clientX;
 
-        if (newWidth < 240) newWidth = 240;
-        if (newWidth > 480) newWidth = 480;
+        if (newWidth < 300) newWidth = 300;
+        if (newWidth > 540) newWidth = 540;
 
         if (sidebarRef.current && navbarRef.current) {
             sidebarRef.current.style.width = `${newWidth}px`;
@@ -53,30 +54,30 @@ export const Navigation = () => {
     };
 
     const resetWidth = () => {
-        if(sidebarRef.current && navbarRef.current) {
+        if (sidebarRef.current && navbarRef.current) {
             setIsCollapsed(false);
             setIsResetting(true);
-            sidebarRef.current.style.width = isMobile ? "100%" : "240px";
+            sidebarRef.current.style.width = isMobile ? "100%" : "300px";
             navbarRef.current.style.setProperty(
                 "width",
-                isMobile ? "0" : "calc(100% - 240px)"
+                isMobile ? "0" : "calc(100% - 300px)"
             );
             navbarRef.current.style.setProperty(
                 "left",
-                isMobile ? "100%" : "240px"
+                isMobile ? "100%" : "300px"
             );
             setTimeout(() => setIsResetting(false), 300);
         }
     };
 
     useEffect(() => {
-        if(isMobile) {
+        if (isMobile) {
             toggleCollapse();
         } else {
             resetWidth();
         }
-    },[isMobile]);
-    
+    }, [isMobile]);
+
     useEffect(() => {
         if (sidebarRef.current && navbarRef.current) {
             if (isCollapsed) {
@@ -84,7 +85,7 @@ export const Navigation = () => {
                 navbarRef.current.style.left = "0";
                 navbarRef.current.style.width = "100%";
             } else {
-                const width = isMobile ? "100%" : "240px";
+                const width = isMobile ? "100%" : "300px";
                 sidebarRef.current.style.width = width;
                 navbarRef.current.style.left = isMobile ? "0" : width;
                 navbarRef.current.style.width = isMobile ? "100%" : `calc(100% - ${width})`;
@@ -99,7 +100,7 @@ export const Navigation = () => {
                 className={cn(
                     "group h-full bg-secondary overflow-y-auto relative flex flex-col z-50 transition-all ease-in-out duration-300",
                     isCollapsed && "w-0",
-                    !isCollapsed && !isMobile && "w-60",
+                    !isCollapsed && !isMobile && "w-72",
                     isResetting && "transition-all ease-in-out duration-300",
                     isMobile && "w-0"
                 )}
@@ -115,7 +116,7 @@ export const Navigation = () => {
                     <ChevronsLeft className="h-6 w-6" />
                 </div>
                 <div>
-                    <p>Action Items</p>
+                    <UserItem />
                 </div>
                 <div className="mt-4">
                     <p>Documents</p>
@@ -130,7 +131,7 @@ export const Navigation = () => {
                 ref={navbarRef}
                 className={cn(
                     "absolute top-0 z-50 transition-all ease-in-out duration-300",
-                    !isCollapsed && !isMobile && "left-60 w-[calc(100%-240px)]",
+                    !isCollapsed && !isMobile && "left-72 w-[calc(100%-300px)]",
                     (isCollapsed || isMobile) && "left-0 w-full"
                 )}
             >
@@ -140,4 +141,4 @@ export const Navigation = () => {
             </div>
         </>
     );
-}
+};
