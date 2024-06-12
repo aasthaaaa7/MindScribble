@@ -6,6 +6,8 @@ import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import { UserItem } from "./user-item";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export const Navigation = () => {
     const pathname = usePathname();
@@ -15,6 +17,7 @@ export const Navigation = () => {
     const navbarRef = useRef<ElementRef<"div">>(null);
     const [isResetting, setIsResetting] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(isMobile);
+    const documents = useQuery(api.documents.get);
 
     useEffect(() => {
         setIsCollapsed(isMobile);
@@ -119,7 +122,11 @@ export const Navigation = () => {
                     <UserItem />
                 </div>
                 <div className="mt-4">
-                    <p>Documents</p>
+                    {documents?.map((document) =>(
+                        <p key={document._id}>
+                            {document.title}
+                        </p>
+                    ))}
                 </div>
                 <div
                     onMouseDown={handleMouseDown}
