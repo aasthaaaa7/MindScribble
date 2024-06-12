@@ -1,13 +1,15 @@
 "use client";
 
-import { ChevronsLeft, MenuIcon } from "lucide-react";
+import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import { UserItem } from "./user-item";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Item } from "./item";
+import { toast } from "sonner";
 
 export const Navigation = () => {
     const pathname = usePathname();
@@ -18,6 +20,7 @@ export const Navigation = () => {
     const [isResetting, setIsResetting] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(isMobile);
     const documents = useQuery(api.documents.get);
+    const create = useMutation(api.documents.create);
 
     useEffect(() => {
         setIsCollapsed(isMobile);
@@ -60,14 +63,14 @@ export const Navigation = () => {
         if (sidebarRef.current && navbarRef.current) {
             setIsCollapsed(false);
             setIsResetting(true);
-            sidebarRef.current.style.width = isMobile ? "100%" : "300px";
+            sidebarRef.current.style.width = isMobile? "100%" : "300px";
             navbarRef.current.style.setProperty(
                 "width",
-                isMobile ? "0" : "calc(100% - 300px)"
+                isMobile? "0" : "calc(100% - 300px)"
             );
             navbarRef.current.style.setProperty(
                 "left",
-                isMobile ? "100%" : "300px"
+                isMobile? "100%" : "300px"
             );
             setTimeout(() => setIsResetting(false), 300);
         }
@@ -88,13 +91,23 @@ export const Navigation = () => {
                 navbarRef.current.style.left = "0";
                 navbarRef.current.style.width = "100%";
             } else {
-                const width = isMobile ? "100%" : "300px";
+                const width = isMobile? "100%" : "300px";
                 sidebarRef.current.style.width = width;
-                navbarRef.current.style.left = isMobile ? "0" : width;
-                navbarRef.current.style.width = isMobile ? "100%" : `calc(100% - ${width})`;
+                navbarRef.current.style.left = isMobile? "0" : width;
+                navbarRef.current.style.width = isMobile? "100%" : `calc(100% - ${width})`;
             }
         }
     }, [isCollapsed, isMobile]);
+
+    const handleCreate = () => {
+        const promise = create({ title: "Untitled" });
+        toast.promise(promise, {
+            loading: "Creating a new note...",
+            success: "New note created!",
+            error: "Failed to create a new note."
+        });
+    };
+
 
     return (
         <>
@@ -103,7 +116,7 @@ export const Navigation = () => {
                 className={cn(
                     "group h-full bg-secondary overflow-y-auto relative flex flex-col z-50 transition-all ease-in-out duration-300",
                     isCollapsed && "w-0",
-                    !isCollapsed && !isMobile && "w-72",
+                   !isCollapsed &&!isMobile && "w-72",
                     isResetting && "transition-all ease-in-out duration-300",
                     isMobile && "w-0"
                 )}
@@ -120,6 +133,22 @@ export const Navigation = () => {
                 </div>
                 <div>
                     <UserItem />
+                    <Item
+                        isSearch
+                        label="Search"
+                        icon={Search}
+                        onClick={() => {}}
+                    />
+                    <Item
+                        label="Settings"
+                        icon={Settings}
+                        onClick={() => {}}
+                    />
+                    <Item
+                        onClick={handleCreate}
+                        label="New Page"
+                        icon={PlusCircle}
+                    />
                 </div>
                 <div className="mt-4">
                     {documents?.map((document) =>(
