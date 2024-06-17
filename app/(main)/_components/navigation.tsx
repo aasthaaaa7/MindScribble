@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
@@ -15,8 +15,10 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { TrashBox } from "./trash-box";
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
+import { Navbar } from "./navbar";
 
 export const Navigation = () => {
+    const params = useParams();
     const settings = useSettings();
     const search = useSearch();
     const pathname = usePathname();
@@ -187,9 +189,16 @@ export const Navigation = () => {
                     (isCollapsed || isMobile) && "left-0 w-full"
                 )}
             >
-                <nav className="bg-transparent px-3 py-2 w-full">
+                {!!params.documentId? (
+                    <Navbar
+                        isCollapsed = {isCollapsed}
+                        onResetWidth = {resetWidth}
+                    />
+                ) : (
+                    <nav className="bg-transparent px-3 py-2 w-full">
                     {isCollapsed && <MenuIcon role="button" className="h-6 w-6 text-muted-foreground" onClick={toggleCollapse} />}
                 </nav>
+                )}
             </div>
         </>
     );
