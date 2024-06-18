@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from "lucide-react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { Navbar } from "./navbar";
 
 export const Navigation = () => {
+    const router = useRouter();
     const params = useParams();
     const settings = useSettings();
     const search = useSearch();
@@ -108,7 +109,11 @@ export const Navigation = () => {
     }, [isCollapsed, isMobile]);
 
     const handleCreate = () => {
-        const promise = create({ title: "Untitled" });
+        const promise = create({
+            title: "Untitled",
+          }).then((documentId) => router.push(`/documents/${documentId}`));
+
+
         toast.promise(promise, {
             loading: "Creating a new note...",
             success: "New note created!",
